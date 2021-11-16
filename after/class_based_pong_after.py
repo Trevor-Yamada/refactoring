@@ -21,6 +21,7 @@ class Paddle:
 
         
     def up(self):
+        ''' move the tutle up '''
         y = self.turt.ycor()
         y += 20
         self.turt.sety(y)
@@ -28,6 +29,7 @@ class Paddle:
 
 
     def down(self):
+        ''' move the tutle down '''
         y = self.turt.ycor() #Get the current y coordinate
         y -= 20             #add 20px could also be y=y+20
         self.turt.sety(y)    #move the paddle to the new y position
@@ -71,6 +73,7 @@ class Ball:
     
         
     def checkBound(self):
+        ''' helper function to check the bound for ball '''
         # Top and bottom
         if self.turt.ycor() > 290:
             self.turt.sety(290)
@@ -128,6 +131,7 @@ def make_turtle(shape, color, stretch_width, stretch_length, x_pos, y_pos):
     return turt
 
 class Player:
+    ''' helper class to hold the score and paddle '''
     def __init__(self, x_position, y_position):
         self.score = 0
         self.paddle = Paddle(x_position, y_position)
@@ -137,6 +141,7 @@ class Player:
         return self.score
 
 class Game:
+    ''' helper class to execute the game and hold all variables '''
     def __init__(self, ball_x = 0.0925, ball_y = 0.0925):
         self.window = make_window("Pong - A CS151 Reproduction!", "black", 800, 600)
         self.player1 = Player(-350, 0)
@@ -145,10 +150,12 @@ class Game:
         self.pen = make_turtle("square", "white", 1, 1, 0, 260)
 
     def scoreBoard(self):
+        ''' display the scoreboard '''
         self.pen.write("Player A: 0  Player B: 0", align="center", font=("Courier", 24, "normal"))
         self.pen.hideturtle()
 
     def keyBoard(self):
+        ''' handle the keyboard reaction '''
         self.window.listen() #Listen for keyboard input
         self.window.onkeypress(self.player1.paddle.up, "w") #when you press w run paddle_a_up
         self.window.onkeypress(self.player1.paddle.down, "s")
@@ -176,12 +183,14 @@ class Game:
             self.resetBall()
 
     def resetBall(self):
+        ''' reset the ball to the origin '''
         self.pen.clear()
         self.pen.write("Player A: "+ str(self.player1.getScore()) + "  Player B: "+ str(self.player2.getScore()), align="center", font=("Courier", 24, "normal"))
         self.ball.goto(0, 0)
         self.ball.ball_dx *= -1
 
     def collision(self):
+        ''' handle the collision '''
         if self.collide_player(1):
             self.ball.setx(-340)
             self.ball.ball_dx *= -1.5
@@ -191,6 +200,7 @@ class Game:
             self.ball.ball_dx *= -1.5
 
     def collide_player(self,player):
+        ''' helper function fo collision '''
         if(player == 1):
             return self.ball.xcor() < -340 and self.ball.xcor() > -350 and self.ball.ycor() < self.player1.paddle.ycor() + 50 and self.ball.ycor() > self.player1.paddle.ycor() - 50
         elif(player == 2):
