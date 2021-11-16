@@ -21,6 +21,7 @@ class Paddle:
 
         
     def up(self):
+        ''' Move paddle up '''
         y = self.turt.ycor()
         y += 20
         self.turt.sety(y)
