@@ -58,16 +58,9 @@ def draw_dot( turt, tile_size, player): #REFACTORED
     player_color = {1 : "red", 2 : "yellow", 0 : "white"}
     turt.dot(tile_size-5, player_color[player])
 
-def check_win(grid, player):
-    #REFACTORED COMMENT
-    ''' checks the winner in the grid
-    returns true if player won
-    returns false if player hasnt won...yet
-     '''
 
-    count = 0
+def check_row(grid, player):
 
-    # check rows
     for row in range(len(grid)):
         count = 0
         for col in range(len(grid[0])):
@@ -78,8 +71,9 @@ def check_win(grid, player):
                     return True
             else:
                 count = 0
-            
-    # check columns
+
+def check_col(grid, player):
+
     for col in range(len(grid[0])):
         count = 0
         for row in range(len(grid)):
@@ -91,35 +85,45 @@ def check_win(grid, player):
             else:
                 count = 0
 
-    # check diagonal(s)
-    #REFACTORED
+def check_diag(grid, player):
+
     for row in range(len(grid)):
-        for col in range(len(grid[0])):
+            for col in range(len(grid[0])):
 
-            if row + 3 < len(grid) and col + 3 < len(grid[row]):
-                #Decending diagonal check
-                if grid[row][col] == player\
-                   and grid[row+1][col+1] == player\
-                   and grid[row+2][col+2] == player\
-                   and grid[row+3][col+3] == player:
-                   return True
+                if row + 3 < len(grid) and col + 3 < len(grid[row]):
+                    #Decending diagonal check
+                    if grid[row][col] == player\
+                    and grid[row+1][col+1] == player\
+                    and grid[row+2][col+2] == player\
+                    and grid[row+3][col+3] == player:
+                        return True
 
-            if row + 3 < len(grid) and col - 3 >= 0: 
-                #Acending diagonal check
-                if grid[row][col] == player\
-                   and grid[row+1][col-1] == player\
-                   and grid[row+2][col-2] == player\
-                   and grid[row+3][col-3] == player:
-                   return True
-            
+                if row + 3 < len(grid) and col - 3 >= 0: 
+                    #Acending diagonal check
+                    if grid[row][col] == player\
+                    and grid[row+1][col-1] == player\
+                    and grid[row+2][col-2] == player\
+                    and grid[row+3][col-3] == player:
+                        return True
 
 
+def check_win(grid, player):
+    #REFACTORED COMMENT
+    ''' checks the winner in the grid
+    returns true if player won
+    returns false if player hasnt won...yet
+     '''
+
+    if check_row(grid, player) == True: 
+        return True
+    elif check_col(grid,player) == True:
+        return True
+    else: 
+        return check_diag(grid,player)
+        
 
 # setting up the window
 window = make_window("Connect 4", "light sky blue", (800, 600))
-
-#Moved grid[] to global variable
-#Moved grid creation to main() function 
 
 # drawing_turtle
 my_turtle = make_turtle('classic', "white",( 1, 1), (0, 0))
