@@ -91,7 +91,7 @@ def check_win(grid, player):
             else:
                 count = 0
 
-    # check for diagonal 4 
+    # check diagonal(s)
     #REFACTORED
     for row in range(len(grid)):
         for col in range(len(grid[0])):
@@ -178,4 +178,3 @@ def main():
 
 if __name__ == "__main__":
 	main()
-
