@@ -91,7 +91,7 @@ def check_win(grid, player):
             else:
                 count = 0
 
-    # check diagonal(s)
+    # check for diagonal 4 
     #REFACTORED
     for row in range(len(grid)):
         for col in range(len(grid[0])):
