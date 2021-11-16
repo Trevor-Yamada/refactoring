@@ -7,62 +7,60 @@ description:
 '''
 
 import turtle
-#REFACTORED
-x_offset = -150
-y_offset = 200
-tile_size = 50
-turn = 1
-grid = [] #MOVED HERE
-turns = 0
 
-def make_window(window_title, bgcolor, shape):#REFACTORED
+
+def make_window(window_title, bgcolor, width, height):
 	''' this function creates a screen object and returns it '''
 
 	window = turtle.getscreen() # Set the window size
 	window.title(window_title)
 	window.bgcolor(bgcolor)
-	window.setup(*shape)#REFACTORED
+	window.setup(width, height)
 	window.tracer(0) #turns off screen updates for the window Speeds up the game
 	return window
 
 
-def make_turtle(shape, color, stretch, pos):#REFACTORED
+def make_turtle(shape, color, stretch_width, stretch_length, x_pos, y_pos):
     ''' creates a turtle and sets initial position '''
+
     turt = turtle.Turtle()
     turt.speed(0)    # Speed of animation, 0 is max
     turt.shape(shape)
     turt.color(color)
-    turt.shapesize(*stretch) #REFACTORED
+    turt.shapesize(stretch_width, stretch_length) 
     turt.penup()
-    turt.goto(*pos) # Start position #REFACTORED
+    turt.goto(x_pos, y_pos) # Start position
     return turt
 
 
 def draw_grid(grid, turt, x_pos, y_pos, tile_size):
     ''' draws a grid at x, y with a specific tile_size '''
 
-    place_turtle(turt,(x_pos,y_pos))#REFACTORED
+    turt.up()
+    turt.goto(x_pos, y_pos)
+    turt.down()
 
     for row in range(len(grid)):
         for col in range(len(grid[row])):
-        
-            place_turtle(turt,(x_pos + col * tile_size, y_pos -row * tile_size)) #REFACTORED
-            draw_dot( turt ,tile_size, grid[row][col])#REFACTORED
+            
+            turt.up()
+            turt.goto(x_pos + col * tile_size, y_pos -row * tile_size)
+            turt.down()
 
-def place_turtle(turt, pos): #REFACTORED
-    turt.up()
-    turt.goto(*pos)
-    turt.down()
+            if grid[row][col] == 1:
+                turt.dot(tile_size-5, "red")
+            
+            elif grid[row][col] == 2:
+                turt.dot(tile_size-5, "yellow")
+            
+            else:
+                turt.dot(tile_size-5, "white")
 
-def draw_dot( turt, tile_size, player): #REFACTORED
-    player_color = {1 : "red", 2 : "yellow", 0 : "white"}
-    turt.dot(tile_size-5, player_color[player])
 
 def check_win(grid, player):
-    #REFACTORED COMMENT
     ''' checks the winner in the grid
     returns true if player won
-    returns false if player hasnt won...yet
+    returns false if player lost
      '''
 
     count = 0
@@ -79,6 +77,7 @@ def check_win(grid, player):
             else:
                 count = 0
             
+
     # check columns
     for col in range(len(grid[0])):
         count = 0
@@ -91,56 +90,45 @@ def check_win(grid, player):
             else:
                 count = 0
 
-    # check for diagonal 4 
-    #REFACTORED
+    # check diagonal
     for row in range(len(grid)):
         for col in range(len(grid[0])):
 
             if row + 3 < len(grid) and col + 3 < len(grid[row]):
-                #Decending diagonal check
-                if grid[row][col] == player\
-                   and grid[row+1][col+1] == player\
-                   and grid[row+2][col+2] == player\
-                   and grid[row+3][col+3] == player:
-                   return True
-
-            if row + 3 < len(grid) and col - 3 >= 0: 
-                #Acending diagonal check
-                if grid[row][col] == player\
-                   and grid[row+1][col-1] == player\
-                   and grid[row+2][col-2] == player\
-                   and grid[row+3][col-3] == player:
-                   return True
-            
+                if grid[row][col] == 1\
+                   and grid[row+1][col+1] == 1\
+                   and grid[row+2][col+2] == 1\
+                   and grid[row+3][col+3] == 1:
+                   return True 
 
 
 
 # setting up the window
-window = make_window("Connect 4", "light sky blue", (800, 600))
+window = make_window("Connect 4", "light sky blue", 800, 600)
 
-#Moved grid[] to global variable
-#Moved grid creation to main() function 
+
+# the grid
+grid = []
+
+for rows in range(5):
+    grid.append([0]*7)
 
 # drawing_turtle
-my_turtle = make_turtle('classic', "white",( 1, 1), (0, 0))
+my_turtle = make_turtle('classic', "white", 1, 1, 0, 0 )
 
-def play(x_pos,y_pos):
+x_offset = -150
+y_offset = 200
+tile_size = 50
+
+turn = 1
+
+def play(x_pos, y_pos):
     ''' '''
     global turn
-    global turns #created global variable to keep track of CATS GAME(No winners) Status
-
-    
+    row = int(abs((y_pos - y_offset - 25) // (50) + 1))
     col = int(abs((x_pos - x_offset - 25) // (50) + 1))
-    
-    #variable to index each column 
-    i = (len(grid)-1)
-    while i != 5 : #REFACTORED TO INCLUDE "GRAVITY" LIKE THE REAL CONNECT 4
-        if grid[i][col] == 0:
-            grid[i][col] = turn
-            i = 5
-        else:
-            i -= 1
-    
+    print(row, col)
+    grid[row][col] = turn
     draw_grid(grid, my_turtle, x_offset, y_offset, tile_size)
     window.update()
 
@@ -149,33 +137,56 @@ def play(x_pos,y_pos):
 
     elif check_win(grid, 2):
         print("player 2 won")
-    
-    #Turn-change and Cats game Checker
+
     if turn == 1:
         turn = 2
-        turns+=1
-        if turns == 35:#if board is filled
-            print('CATS GAME')
-            window.exitonclick()
     else:
         turn = 1
-        turns += 1
-    
 
+
+window.onscreenclick(play)
+window.listen()
 
 def main():
     ''' the main function where the game events take place '''
-    for rows in range(5):#REFACTORED
-        grid.append([0]*7)
-    
-    window.onscreenclick(play)#REFACTORED
-    window.listen()
+
+    global turn
 
     draw_grid(grid, my_turtle, x_offset, y_offset, tile_size)
 
     while True:
+
+        # grid[1][0] = 1
+        # grid[2][1] = 1
+        # grid[3][2] = 1
+        # grid[4][3] = 1
+
+        selected_row = int(input("enter row, player "+ str(turn) +": "))
+        selected_col = int(input("enter col, player "+ str(turn) +": "))
+
+        if grid[selected_row][selected_col] == 0:
+
+            if turn == 1:
+                grid[selected_row][selected_col] = 1
+            else:
+                grid[selected_row][selected_col] = 2
+
+        draw_grid(grid, my_turtle, -150, 200, 50)
         window.update()
+
+        if check_win(grid, 1):
+            print("player 1 won")
+
+        elif check_win(grid, 2):
+            print("player 2 won")
+
+        if turn == 1:
+            turn = 2
+        else:
+            turn = 1
+
+
+    # window.exitonclick()
 
 if __name__ == "__main__":
 	main()
-
