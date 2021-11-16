@@ -1,26 +1,18 @@
 
 import turtle
 import time
+import sys
 from playsound import playsound
 from multiprocessing import Process
 
-# create a turtle and a window for drawing
-if __name__ == "__main__":
-    turt = turtle.Turtle()
-    window = turtle.getscreen()
-    window.bgcolor('slate gray')
-    turtle.hideturtle()
-    turt.hideturtle()
-    turt.shape('square')
-    turt.shapesize(2.5, 2.5)
 
-    # set offsets and tile size for drawing the grid
-    x_offset = -150
-    y_offset = 200
-    tile_size = 50
-
-    # create an int variable for counting steps
-    steps = 0
+x_offset = -150
+y_offset = 200
+tile_size = 50
+steps = 0
+shape = 'square'
+size = (2.5,2.5)
+grid = []
 
 
 def draw_grid(grid, turt, x_pos, y_pos, tile_size):
@@ -93,16 +85,20 @@ def find_start(grid):
     ''' finds the start position (S) in the grid
     returns a tuple of start row and col
     '''
-
     # go over every cell in the grid
     for row in range(len(grid)):
         for col in range(len(grid[0])):
-
             # cell at row, col is 'S' return row and col as a tuple
             if grid[row][col] == 'S':
                 return (row, col)
 
-
+def make_turtle(shape,size):
+    turt = turtle.Turtle()
+    turt.hideturtle()
+    turt.shape(shape)
+    turt.hideturtle()
+    turt.shapesize(*size)
+    return turt
 
 def read_grid(file_name):
     ''' reads a maze file and initializes a gird with its contents '''
@@ -187,46 +183,62 @@ def background_music():
 
     playsound('Tetris.mp3')    
 
-
-def main():
-    ''' reads a maze file and sets the search parameters '''
-
-    
-
-    # read maze file and create playground grid
-    playground = read_grid("maze2.txt")
-
-    # find start position
-    row, col = find_start(playground)
-
-    # call the search function, it takes the grid, row, column, and steps
-    search_from(playground, row, col)
-
-    # create a list of tuples representing the path
+def get_path(playground):
     path = []
     for row in range(len(playground)):
         for col in range(len(playground[0])):
             if playground[row][col] == 'P':
                 path.append((row, col))
+    return path
+
+
+
+def main():
+    ''' reads a maze file and sets the search parameters '''
+
+
+    # read maze file and create playground grid
+    grid = read_grid("maze2.txt")
+
+    # find start position
+    row, col = find_start(grid)
+
+    # call the search function, it takes the grid, row, column
+    search_from(grid, row, col)
+
+    # create a list of tuples representing the path
+    path =  get_path(grid)
 
     # print path length
     print('path length:', len(path))
 
     # draw the final grid
-    draw_grid(playground, turt, x_offset, y_offset, tile_size)
+    draw_grid(grid, turt, x_offset, y_offset, tile_size)
     
     # pause the grid drawing for 4 seconds
     time.sleep(4)
 
     # print the number of steps taken to find the path
     print("number of steps taken to reach answer:", steps)
+
+
+
+
+# create a turtle and a window for drawing
+#if __name__ == "__main__":
     
 
+    # set offsets and tile size for drawing the grid
+   
+    # create an int variable for counting steps
+    
 
 if __name__ == "__main__":
 
-    p = Process(target=background_music, args=())
-    p.start()
+    turt = make_turtle(shape,size)
+    window = turtle.getscreen()
+    window.bgcolor('slate gray')
+    #p = Process(target=background_music, args=())
+    #p.start()
     main()
-    p.terminate()
-
+    #p.terminate()
