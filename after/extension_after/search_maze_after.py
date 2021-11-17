@@ -21,64 +21,40 @@ def draw_grid(grid, turt, x_pos, y_pos, tile_size):
     window.tracer(False)
     
     # move turtle to initial drawing position
-    turt.up()
-    turt.goto(x_pos, y_pos)
-    turt.down()
+    place_turt(x_pos,y_pos)
 
     # go over every cell in the grid
     for row in range(len(grid)):
         for col in range(len(grid[row])):
-            
+            cell = grid[row][col]
             # move turtle to the position of the cell in the grid
-            turt.up()
-            turt.goto(x_pos + col * tile_size, y_pos -row * tile_size)
-            turt.down()
-
+            place_turt(x_pos + col * tile_size, y_pos -row * tile_size)
             # if the cell is an obstacle (X) draw a black dot
-            if grid[row][col] == 'X':
-                #turt.dot(tile_size-5, "Black")
-                turt.color('grey', "black")
-                turt.stamp()
-            
-            # if the cell is the start drawing position (S) draw a yellow dot
-            elif grid[row][col] == 'S':
-                #turt.dot(tile_size-5, "yellow")
-                turt.color('grey', "yellow")
-                turt.stamp()
-            
-            # if the cell is the End position (E) draw a Red dot
-            elif grid[row][col] == 'E':
-                #turt.dot(tile_size-5, "red")
-                turt.color('grey', "red")
-                turt.stamp()
-
-            # if the cell is part of a path (P) draw a royalblue dot
-            elif grid[row][col] == 'P':
-                #turt.dot(tile_size-5, "royalblue")
-                turt.color('grey', "royalblue")
-                turt.stamp()
-
-            # if the cell has been tried before (T) draw a light blue dot
-            elif grid[row][col] == 'T':
-                #turt.dot(tile_size-5, "light blue")
-                turt.color('grey', "light blue")
-                turt.stamp()
-
-            # if the cell is part of a deadend (D) draw a gray dot
-            elif grid[row][col] == 'D':
-                #turt.dot(tile_size-5, "gray")
-                turt.color('gainsboro', "gray")
-                turt.stamp()
-            
-            # else draw a white dot
-            else:
-                #turt.dot(tile_size-5, "white")
-                turt.color( 'grey', "white")
-                turt.stamp()
-    
+            turt_draw(turt,cell)
     # turn tracer back on
     window.tracer(True)
 
+
+def turt_draw(turt,cell):
+    player_color = {'X' :('grey', 'black'),
+                    'S' :('grey', "yellow"),
+                    'E' :('grey', "red"),
+                    'P' :('grey', "royalblue"),
+                    'T' :('grey', 'light blue'),
+                    'D': ('gainsboro', "gray")}
+    if cell not in player_color.keys():
+        turt.color( 'grey', "white")
+        turt.stamp()
+    else:
+        turt.color(*player_color[cell])
+        turt.stamp()
+
+
+
+def place_turt(x_pos,y_pos):
+    turt.up()
+    turt.goto(x_pos, y_pos)
+    turt.down()
 
 def find_start(grid):
     ''' finds the start position (S) in the grid
@@ -195,7 +171,6 @@ def get_path(playground):
 def main():
     ''' reads a maze file and sets the search parameters '''
 
-
     # read maze file and create playground grid
     grid = read_grid("maze2.txt")
 
@@ -221,23 +196,11 @@ def main():
     print("number of steps taken to reach answer:", steps)
 
 
-
-
-# create a turtle and a window for drawing
-#if __name__ == "__main__":
-    
-
-    # set offsets and tile size for drawing the grid
-   
-    # create an int variable for counting steps
-    
-
 if __name__ == "__main__":
-
     turt = make_turtle(shape,size)
     window = turtle.getscreen()
     window.bgcolor('slate gray')
-    #p = Process(target=background_music, args=())
-    #p.start()
+    p = Process(target=background_music, args=())
+    p.start()
     main()
-    #p.terminate()
+    p.terminate()
